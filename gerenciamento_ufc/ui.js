@@ -8,9 +8,16 @@ class Ui {
         this.repositorio = new repositorio_1.Repositorio();
         this.user = undefined;
     }
-    addUser(user, repositorio, nome, senha) {
-        if (user && (user.nome == "admin")) {
-            repositorio.addUser(new usuario_1.Usuario(nome, senha));
+    addUser(user, repositorio, nome, senha, tipo) {
+        if (user && (user.nivel_de_acesso == 3)) {
+            if (tipo == "admin") {
+                repositorio.addUser(new usuario_1.Admin(nome, senha));
+            }
+            else if (tipo == "professor") {
+                repositorio.addUser(new usuario_1.Professor(nome, senha));
+            }
+            else
+                repositorio.addUser(new usuario_1.Aluno(nome, senha));
             readline_1.cout("Usuário cadastrado com sucesso.");
         }
         else if (!user) {
@@ -21,7 +28,7 @@ class Ui {
         }
     }
     showUsers(user, repositorio) {
-        if (user && (user.admin == true)) {
+        if (user && (user.nivel_de_acesso == 3)) {
             let mapa = repositorio.getUsers();
             let print = "[ ";
             for (let users of mapa.keys()) {
@@ -54,22 +61,21 @@ class Ui {
         }
     }
     addSemestre(user, repositorio, nome, numero) {
-        if (user && (user.admin == true)) {
+        if (user && (user.nivel_de_acesso == 3)) {
             let mapa = repositorio.getUsers();
-            for (let userName of mapa.keys()) {
-                if (nome == userName) {
-                    repositorio.addSemestre(mapa.get(userName), numero);
-                    readline_1.cout("Semestre cadastrado com sucesso.");
-                }
+            if (mapa.has(nome)) {
+                repositorio.addSemestre(mapa.get(nome), numero);
+                readline_1.cout("Semestre cadastrado com sucesso.");
             }
-            throw "Matrícula não efetuada. Usuário inexistente.";
+            else
+                throw "Matrícula não efetuada. Usuário inexistente.";
         }
         else if (!user) {
             throw "Nenhum usuário logado.";
         }
     }
     showSemestres(user, repositorio, nome) {
-        if (user && (user.admin == true)) {
+        if (user && (user.nivel_de_acesso == 3)) {
             let mapa = repositorio.getUsers();
             let print = "[ ";
             if (mapa.has(nome)) {
@@ -92,6 +98,60 @@ class Ui {
             readline_1.cout(print);
         }
     }
+    addEmentaDisciplina(user, repositorio, nome, semestre, curso) {
+        if (user && (user.nivel_de_acesso == 3)) {
+            repositorio.addEmentaDisciplina(nome, semestre, curso);
+            readline_1.cout("Ementa adicionada.");
+        }
+        else if (!user) {
+            throw "Nenhum usuário logado.";
+        }
+        else {
+            throw "Seu tipo de usuário não permite essa opção.";
+        }
+    }
+    showEmentas(user, repositorio) {
+        if (!user) {
+            throw "Nenhum usuário logado.";
+        }
+        else {
+            let mapa = repositorio.showEmentasDisciplinas();
+            let print = "[ ";
+            for (let disciplina of mapa.values()) {
+                print += "Curso: " + disciplina.curso + "; Nome: " + disciplina.nome + "; Semestre: " + disciplina.semestre + " - ";
+            }
+            print += "]";
+            readline_1.cout(print);
+        }
+    }
+    oferecerDisciplina(user, repositorio, nome) {
+        if (user && (user.nivel_de_acesso == 3)) {
+            if (!repositorio.showEmentasDisciplinas().has(nome))
+                throw "Disciplina inexistente.";
+            repositorio.oferecerDisciplina(nome);
+            readline_1.cout("A disciplina agora está acessível aos alunos.");
+        }
+        else if (!user) {
+            throw "Nenhum usuário logado.";
+        }
+        else {
+            throw "Seu tipo de usuário não permite essa opção.";
+        }
+    }
+    showDisciplinasOfertadas(user, repositorio) {
+        if (!user) {
+            throw "Nenhum usuário logado.";
+        }
+        else {
+            let mapa = repositorio.showDisciplinasOfertadas();
+            let print = "[ ";
+            for (let disciplina of mapa.values()) {
+                print += "Curso: " + disciplina.curso + "; Nome: " + disciplina.nome + "; Semestre: " + disciplina.semestre + " - ";
+            }
+            print += "]";
+            readline_1.cout(print);
+        }
+    }
     static interacao() {
         let interacao = new Ui();
         let linhaCmd = "";
@@ -103,20 +163,20 @@ class Ui {
                     let HELP = `
                     help
                     showUsers
-                    addUser       _nome _senha _admin
+                    addUser       _nome _senha _tipo
                     login         _nome _senha
                     logout
                     addSemestre   _nome _numero
                     showSemestres _nome
-                    seguidos      _nome
-                    timeline      _nome
-                    myTweets      _nome
-                    unread        _nome
+                    addEmentaDisciplina _nome _semestre _curso?
+                    showEmentas
+                    oferecerDisciplina  _nome
+                    showDisciplinasOfertadas
                     `;
                     readline_1.cout(HELP);
                 }
                 if (cmd[0] == "addUser") {
-                    interacao.addUser(interacao.user, interacao.repositorio, cmd[1], cmd[2]);
+                    interacao.addUser(interacao.user, interacao.repositorio, cmd[1], cmd[2], cmd[3]);
                 }
                 if (cmd[0] == "showUsers") {
                     interacao.showUsers(interacao.user, interacao.repositorio);
@@ -134,58 +194,18 @@ class Ui {
                 if (cmd[0] == "showSemestres") {
                     interacao.showSemestres(interacao.user, interacao.repositorio, cmd[1]);
                 }
-                /* if (cmd[0] == "twittar"){
-                    let user = adm.getUser(cmd[1]);
-                    let msg = cmd.slice(2, cmd.length).join(" ");
-                    user.twittar(msg);
+                if (cmd[0] == "addEmentaDisciplina") {
+                    interacao.addEmentaDisciplina(interacao.user, interacao.repositorio, cmd[1], Number(cmd[2]), cmd[3]);
                 }
-                
-                if (cmd[0] == "timeline"){
-                    let user = adm.getUser(cmd[1]);
-                    let lista = user.getTimeline();
-                    cout("timeline " + user.username);
-                    for (let twit of lista){
-                        cout(twit.toString())
-                    }
-                    cout("");
+                if (cmd[0] == "showEmentas") {
+                    interacao.showEmentas(interacao.user, interacao.repositorio);
                 }
-                
-                if (cmd[0] == "myTwits"){
-                    let user = adm.getUser(cmd[1]);
-                    let lista = user.myTwits;
-                    cout("myTwits " + user.username);
-                    for (let twit of lista){
-                        cout(twit.toString())
-                    }
-                    cout("");
+                if (cmd[0] == "oferecerDisciplina") {
+                    interacao.oferecerDisciplina(interacao.user, interacao.repositorio, cmd[1]);
                 }
-
-                if (cmd[0] == "unread"){
-                    let user = adm.getUser(cmd[1]);
-                    let lista = user.getUnread();
-                    cout("unread " + user.username);
-                    for (let twits of lista){
-                        cout(twits.toString());
-                    }
-                    cout("");
+                if (cmd[0] == "showDisciplinasOfertadas") {
+                    interacao.showDisciplinasOfertadas(interacao.user, interacao.repositorio);
                 }
-
-                if (cmd[0] == "like"){
-                    let user = adm.getUser(cmd[1]);
-                    let lista = user.getTimeline();
-                    let teste = false;
-                    for (let twits of lista){
-                        if(cmd[2] == twits.idTw.toString()){
-                            twits.addLike(user);
-                            teste = true;
-                        }
-                    }
-                    if (!teste){
-                        throw "fail: twit " + cmd[2] +" não existe"
-                    }
-                    cout("");
-            
-                } */
             }
             catch (e) {
                 readline_1.cout("" + e);
