@@ -8,16 +8,12 @@ Vamos criar o sistema de gerenciamento curricular da UFC. Nele existirão 3 tipo
     - Adicionar novos usuários;
     - Mostrar quais os usuários cadastrados no sistema;
 ```
-# login _nome _senha
-: login admin admin
->Bem-vindo, admin.
-#logout
-: logout
->Até logo.
-# addUser _nome _senha _tipoDeUsuario
-: addUser ruan ruan aluno
->Usuário Cadastrado com sucesso.
-#showUsers
-: showUsers
->[ admin ruan ]
+login admin admin
+  Bem-vindo, admin.
+logout
+  Até logo.
+addUser ruan ruan aluno
+  Usuário Cadastrado com sucesso.
+showUsers
+  [ admin ruan ]
 ```
