@@ -18,3 +18,21 @@ addUser ruan ruan aluno
 showUsers
   [ admin ruan ]
 ```
+#### Adição de ementas de disciplinas e matrícula de alunos
+- O administrador pode:
+  - Adicionar ementas de disciplinas;
+  - Ver quais as Ementas cadastradas;
+  - Liberar disciplinas para a matrículas dos alunos;
+  - Ver quais as disciplinas disponíveis para matrícula;
+```
+adicionarEmenta Design Desenho1 1
+  Ementa cadastrada com sucesso. 
+adicionarEmenta Design Multimídia 1
+  Ementa cadastrada com sucesso.
+howEmentas
+  [ Design – Desenho1 – 1; Design - Multimídia - 1 ]
+oferecerDisciplina Desenho1
+  A disciplina agora está acessível aos alunos.
+showDisciplinasOfertadas
+  [ Desenho1 ]
+```
