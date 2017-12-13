@@ -4,10 +4,11 @@ Vamos criar o sistema de gerenciamento curricular da UFC. Nele existirão 3 tipo
 ## Funcionalidades
 #### Iniciar o sistema fazendo login e adição de usuários
 - Sistema já começa com um Administrador cadastrado;
-- O Administrador pode:
-  - Fazer login e logout;
+- Administradores podem:
   - Adicionar novos usuários;
   - Mostrar quais os usuários cadastrados no sistema;
+- Administradores, professores e alunos podem:
+  - Fazer login e logout;
 ```
 login admin admin
   Bem-vindo, admin.
@@ -15,24 +16,53 @@ logout
   Até logo.
 addUser ruan ruan aluno
   Usuário Cadastrado com sucesso.
+addUser david david professor
+  Usuário Cadastrado com sucesso.
 showUsers
-  [ admin ruan ]
+  [ admin ruan david ]
 ```
-#### Adição de ementas de disciplinas e matrícula de alunos
-- O administrador pode:
+#### Adição de semestre letivos, de ementas de disciplinas e liberação de disciplinas
+- Administradores podem:
+  - Adicionar semestres letivos aos alunos;
   - Adicionar ementas de disciplinas;
   - Ver quais as Ementas cadastradas;
   - Liberar disciplinas para a matrículas dos alunos;
   - Ver quais as disciplinas disponíveis para matrícula;
 ```
-adicionarEmenta Design Desenho1 1
+addSemestre ruan 1
+  Semestre cadastrado com sucesso.
+addEmentaDisciplina Desenho1 1
   Ementa cadastrada com sucesso. 
-adicionarEmenta Design Multimídia 1
+addEmentaDisciplina poo 1
   Ementa cadastrada com sucesso.
-howEmentas
-  [ Design – Desenho1 – 1; Design - Multimídia - 1 ]
-oferecerDisciplina Desenho1
+showEmentas
+  [ Curso: Design Digital - Nome: Desenho1 - Semestre: 1; Curso: Design Digital - Nome: poo - Semestre: 1; ]
+oferecerDisciplina poo
   A disciplina agora está acessível aos alunos.
 showDisciplinasOfertadas
-  [ Desenho1 ]
+  [ Curso: Design Digital - Nome: poo - Semestre: 1 - Professor: ; ]
+```
+#### Alocar professores e matricular alunos em disciplinas
+- O administrador pode:
+  - Alocar professores em disciplinas;
+- Administradores e alunos podem:
+  - Matricular em disciplinas;
+```
+alocarProfessor david poo
+  Professor Alocado. 
+matricular ruan poo
+  Aluno matriculado com sucesso.
+```
+#### Alocar professores e matricular alunos em disciplinas
+- Administradores e professores podem:
+  - Adicionar notas às disciplinas;
+- Administradores e alunos podem:
+  - Ver médias dos alunos nas disciplinas;
+```
+lancarNota ruan poo ap1 10
+  Nota lançada com sucesso. 
+lancarNota ruan poo ap2 9.5
+  Nota lançada com sucesso.
+verMedia ruan poo
+  Aluno: ruan - Disciplina: poo - Média: 9.75.
 ```
