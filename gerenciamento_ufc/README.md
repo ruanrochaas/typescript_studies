@@ -66,4 +66,4 @@ lancarNota ruan poo ap2 9.5
 verMedia ruan poo
   Aluno: ruan - Disciplina: poo - Média: 9.75.
 ```
-![Uml](typescript_studies/gerenciamento_ufc/gerenciamento_ufc)
+![Uml](typescript_studies/gerenciamento_ufc/gerenciamento_ufc.png)
