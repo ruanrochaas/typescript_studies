@@ -1,0 +1,68 @@
+<diagram program="umletino" version="14.2"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>0</x><y>393</y><w>100</w><h>60</h></coordinates><panel_attributes>Nota
+-
++ idNota: string;
++ valor: number;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>170</x><y>394</y><w>120</w><h>80</h></coordinates><panel_attributes>Disciplina_Ementa
+-
++ curso: string;
++ nome: string;
++ semestre: number;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>524</y><w>290</w><h>100</h></coordinates><panel_attributes>Disciplina_Matriculavel extends Disciplina_Ementa
+-
++ professor: string;
++ provas: Map&lt;string, number&gt;;
+-
++ setProfessor(nomeDoProfessor: string);
++ calcularMedia(): number;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>150</x><y>774</y><w>280</w><h>70</h></coordinates><panel_attributes>Semestre
+-
++ numero: string;
++ ativo: boolean;
++ disciplinas: Map&lt;string, Disciplina_Matriculavel&gt;;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>500</x><y>754</y><w>200</w><h>110</h></coordinates><panel_attributes>Usuario
+-
++ nome: string;
++ senha: string;
++ nivel_de_acesso: number;
++ semestre: Map&lt;string, Semestre&gt;;
+-
++ showSemetres()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>400</x><y>370</y><w>410</w><h>320</h></coordinates><panel_attributes>Repositorio
+-
+- usuarios: Map&lt;string, Usuario&gt;;
+- disciplinas_ementa: Map&lt;string, Disciplina_Ementa&gt;;
+- disciplinas_ofertadas: Map&lt;string, Disciplina_Matriculavel&gt;;
+-
++ addUser(usuario: Usuario): void;
++ getUser(nome: string, senha: string): Usuario | undefined;
++ getUsers(): Map&lt;string, Usuario&gt;;
++ addSemestre(user: Usuario, numero: string);
++ addEmentaDisciplina(nome: string, semestre: number, curso?: string);
++ showEmentasDisciplinas(): Map&lt;string, Disciplina_Ementa&gt;;
++ oferecerDisciplina(nome: string);
++ showDisciplinasOfertadas(): Map&lt;string, Disciplina_Matriculavel&gt;;
++ getDisciplinaOfertada(nome: string): Disciplina_Matriculavel;
++ testarProf(nome: string): boolean;
++ testarDisc(nome: string): boolean;
++ alocarProfessor(nomeDisc: string, nomeProf: string);
++ getAluno(nomeAlu: string): Aluno;
++ matricular(aluno: Aluno, disciplina: Disciplina_Matriculavel);
++ lancarNota(aluno: Aluno, nomeDisc: string, idProva: string, nota: number);
++ verMedia(aluno: Aluno, nomeDisc: string): number;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>400</x><y>0</y><w>410</w><h>310</h></coordinates><panel_attributes>Ui
+-
+- repositorio: Repositorio;
+- user: Usuario | undefined;
+-
++ help(user: Usuario);
++ addUser(user: Usuario, repositorio: Repositorio, nome: string, senha: string, tipo: string);
++ showUsers(user: Usuario, repositorio: Repositorio);
++ login(user: Usuario);
++ logout(user: Usuario): Usuario;
++ addSemestre(user: Usuario, repositorio: Repositorio, nome: string, numero: string);
++ showSemestres(user: Usuario, repositorio: Repositorio, nome: string);
++ addEmentaDisciplina(user: Usuario, repositorio: Repositorio, nome: string, semestre: number, curso?: string);
++ showEmentas(user: Usuario, repositorio: Repositorio);
++ oferecerDisciplina(user: Usuario, repositorio: Repositorio, nome: string);
++ showDisciplinasOfertadas(user: Usuario, repositorio: Repositorio);
++ alocarProfessor(user: Usuario, repositorio: Repositorio, nomeProf: string, nomeDisc: string);
++ matricular(user: Usuario, repositorio: Repositorio, nomeAluno: string, nomeDisc: string);
++ lancarNota(user: Usuario, repositorio: Repositorio, nomeAluno: string, nomeDisc: string, idAval: string, nota: string);
++ verMedia(user: Usuario, repositorio: Repositorio, nomeAluno: string, nomeDisc: string);
++ static interacao();</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>600</x><y>300</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>590</x><y>680</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>800</y><w>100</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>80;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>170</x><y>620</y><w>130</w><h>170</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>110;150;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>280</x><y>490</y><w>140</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>120;10;10;80</additional_attributes></element><element><id>Relation</id><coordinates><x>280</x><y>430</y><w>140</w><h>50</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>120;30;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>50</x><y>450</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element></diagram>
