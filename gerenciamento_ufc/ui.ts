@@ -1,6 +1,7 @@
 import {cin, cout} from "./readline";
 import {Repositorio} from "./repositorio";
 import {Usuario, Admin, Professor, Aluno} from "./usuario";
+import {Disciplina_Matriculavel} from "./disciplina";
 
 export class Ui{
     repositorio: Repositorio;
@@ -11,12 +12,81 @@ export class Ui{
         this.user = undefined;
     }
 
+    help(user: Usuario){
+        let help = "";
+
+        if(user && (user.nivel_de_acesso == 1)){
+            help = `
+            help
+            showUsers
+            login         _nome _senha
+            logout
+            showSemestres _nome
+            showEmentas
+            showDisciplinasOfertadas
+            matricular _nome _disciplina
+            verMedia _nome _disciplina
+            `;
+            cout(help);
+        }else if(user && (user.nivel_de_acesso == 2)){
+            help = `
+            help
+            showUsers
+            login         _nome _senha
+            logout
+            addSemestre   _nome _numero
+            showSemestres _nome
+            showEmentas
+            showDisciplinasOfertadas
+            lancarNota _nome _disciplina _idAvaliacao _nota
+            `;
+            cout(help);
+        }else if(user && (user.nivel_de_acesso == 3)){
+            help = `
+            help
+            showUsers
+            addUser       _nome _senha _tipo
+            login         _nome _senha
+            logout
+            addSemestre   _nome _numero
+            showSemestres _nome
+            addEmentaDisciplina _nome _semestre _curso?
+            showEmentas
+            oferecerDisciplina  _nome
+            showDisciplinasOfertadas
+            alocarProfessor _nome _disciplina
+            matricular _nome _disciplina
+            lancarNota _nome _disciplina _idAvaliacao _nota
+            verMedia _nome _disciplina
+            `;
+            cout(help);
+        }else if(!user){
+            help = `
+            help
+            login         _nome _senha
+            `;
+            cout(help);
+        }
+    }
+
     addUser(user: Usuario, repositorio: Repositorio, nome: string, senha: string, tipo: string){
         if(user && (user.nivel_de_acesso == 3)){
-            if(tipo == "admin") {repositorio.addUser(new Admin(nome, senha))}
-            else if(tipo == "professor") {repositorio.addUser(new Professor(nome, senha))}
-            else repositorio.addUser(new Aluno(nome, senha))
-            cout("Usuário cadastrado com sucesso.");
+            if(tipo == "admin") {
+                repositorio.addUser(new Admin(nome, senha))
+                cout("Usuário cadastrado com sucesso.");
+            }
+            else if(tipo == "professor") {
+                repositorio.addUser(new Professor(nome, senha))
+                cout("Usuário cadastrado com sucesso.");
+            }
+            else if(tipo == "aluno") {
+                repositorio.addUser(new Aluno(nome, senha))
+                cout("Usuário cadastrado com sucesso.");
+            }
+            else {
+                cout("Tipo de usuário inexistente.");
+            }
+            
         }else if(!user){
             throw "Nenhum usuário logado."
         }else {
@@ -57,7 +127,7 @@ export class Ui{
         }
     }
 
-    addSemestre(user: Usuario, repositorio: Repositorio, nome: string, numero: number){
+    addSemestre(user: Usuario, repositorio: Repositorio, nome: string, numero: string){
         if(user && (user.nivel_de_acesso == 3)){
             let mapa = repositorio.getUsers();
             if(mapa.has(nome)){
@@ -136,11 +206,59 @@ export class Ui{
             let mapa = repositorio.showDisciplinasOfertadas();
             let print = "[ ";
             for(let disciplina of mapa.values()){
-                print += "Curso: " + disciplina.curso + " - Nome: " + disciplina.nome + " - Semestre: " + disciplina.semestre + "; "
+                print += "Curso: " + disciplina.curso + " - Nome: " + disciplina.nome + " - Semestre: " + disciplina.semestre + " - Professor: " + disciplina.professor + "; "
             }
             print += "]";
             cout(print);
         }
+    }
+
+    alocarProfessor(user: Usuario, repositorio: Repositorio, nomeProf: string, nomeDisc: string){
+        if(!repositorio.testarProf(nomeProf))
+            throw "Professor sem cadastro."
+        if(!repositorio.testarDisc(nomeDisc))
+            throw "Disciplina não ofertada."
+        repositorio.alocarProfessor(nomeDisc, nomeProf);
+        cout("Professor Alocado.")
+    }
+
+    matricular(user: Usuario, repositorio: Repositorio, nomeAluno: string, nomeDisc: string){
+        if(!user)
+            throw "Nenhum usuário logado."
+        if(user.nivel_de_acesso == 2)
+            throw "Seu tipo de usuário não permite essa operação."
+        if(!repositorio.testarDisc(nomeDisc))
+            throw "Disciplina não ofertada."
+        if(user.nivel_de_acesso == 1){
+            repositorio.matricular(user, repositorio.getDisciplinaOfertada(nomeDisc))
+        }
+        if(user.nivel_de_acesso == 3){
+            repositorio.matricular(repositorio.getAluno(nomeAluno), repositorio.getDisciplinaOfertada(nomeDisc))
+        }
+        cout("Aluno matriculado com sucesso.")
+    }
+
+    lancarNota(user: Usuario, repositorio: Repositorio, nomeAluno: string, nomeDisc: string, idAval: string, nota: string){
+        if(!user)
+            throw "Nenhum usuário logado."
+        if(user.nivel_de_acesso == 1)
+            throw "Seu tipo de usuário não permite essa operação."
+        if(!repositorio.testarDisc(nomeDisc))
+            throw "Disciplina não ofertada."
+        
+        repositorio.lancarNota(repositorio.getAluno(nomeAluno), nomeDisc, idAval, Number(nota))
+        cout("Nota lançada com sucesso.")
+    }
+
+    verMedia(user: Usuario, repositorio: Repositorio, nomeAluno: string, nomeDisc: string){
+        if(!user)
+            throw "Nenhum usuário logado."
+        if(user.nivel_de_acesso == 2)
+            throw "Seu tipo de usuário não permite essa operação."
+        if(!repositorio.testarDisc(nomeDisc))
+            throw "Disciplina não ofertada."
+        let media = repositorio.verMedia(repositorio.getAluno(nomeAluno), nomeDisc);
+        cout("Aluno: " + repositorio.getAluno(nomeAluno).nome + " - Disciplina: " + repositorio.getDisciplinaOfertada(nomeDisc).nome + " - Média: " + media + ".")
     }
 
     static interacao(){
@@ -153,20 +271,7 @@ export class Ui{
             
             try{
                 if (cmd[0] == "help"){
-                    let HELP = `
-                    help
-                    showUsers
-                    addUser       _nome _senha _tipo
-                    login         _nome _senha
-                    logout
-                    addSemestre   _nome _numero
-                    showSemestres _nome
-                    addEmentaDisciplina _nome _semestre _curso?
-                    showEmentas
-                    oferecerDisciplina  _nome
-                    showDisciplinasOfertadas
-                    `;
-                    cout(HELP);
+                    interacao.help(interacao.user);
                 }
                 
                 if (cmd[0] == "addUser"){
@@ -187,7 +292,7 @@ export class Ui{
                 }
                 
                 if (cmd[0] == "addSemestre"){
-                    interacao.addSemestre(interacao.user, interacao.repositorio, cmd[1], Number(cmd[2]));
+                    interacao.addSemestre(interacao.user, interacao.repositorio, cmd[1], cmd[2]);
                 }
                 
                 if (cmd[0] == "showSemestres"){
@@ -208,6 +313,22 @@ export class Ui{
 
                 if (cmd[0] == "showDisciplinasOfertadas"){
                     interacao.showDisciplinasOfertadas(interacao.user, interacao.repositorio);
+                }
+
+                if (cmd[0] == "alocarProfessor"){
+                    interacao.alocarProfessor(interacao.user, interacao.repositorio, cmd[1], cmd[2]);
+                }
+
+                if(cmd[0] == "matricular"){
+                    interacao.matricular(interacao.user, interacao.repositorio, cmd[1], cmd[2]);
+                }
+
+                if(cmd[0] == "lancarNota"){
+                    interacao.lancarNota(interacao.user, interacao.repositorio, cmd[1], cmd[2], cmd[3], cmd[4]);
+                }
+
+                if(cmd[0] == "verMedia"){
+                    interacao.verMedia(interacao.user, interacao.repositorio, cmd[1], cmd[2]);
                 }
             }catch(e){
                 cout("" + e);

@@ -1,4 +1,4 @@
-import { Usuario, Admin } from "./usuario";
+import { Usuario, Admin, Professor, Aluno } from "./usuario";
 import { Semestre } from "./semestre";
 import { Disciplina_Ementa, Disciplina_Matriculavel } from "./disciplina";
 
@@ -38,7 +38,7 @@ export class Repositorio{
         return this.usuarios;
     }
 
-    public addSemestre(user: Usuario, numero: number){
+    public addSemestre(user: Usuario, numero: string){
         user.semestre.set(numero.toString(),new Semestre(numero))
     }
 
@@ -54,7 +54,55 @@ export class Repositorio{
         this.disciplinas_ofertadas.set(nome, new Disciplina_Matriculavel(nome, this.disciplinas_ementa.get(nome).semestre));
     }
 
-    public showDisciplinasOfertadas(): Map<string, Disciplina_Ementa>{
+    public showDisciplinasOfertadas(): Map<string, Disciplina_Matriculavel>{
         return this.disciplinas_ofertadas;
+    }
+
+    public getDisciplinaOfertada(nome: string): Disciplina_Matriculavel{
+        return this.disciplinas_ofertadas.get(nome);
+    }
+
+    public testarProf(nome: string): boolean{
+        return this.usuarios.has(nome);
+    }
+
+    public testarDisc(nome: string): boolean{
+        return this.disciplinas_ofertadas.has(nome);
+    }
+
+    public alocarProfessor(nomeDisc: string, nomeProf: string){
+        let disciplina = this.getDisciplinaOfertada(nomeDisc);
+        disciplina.setProfessor(nomeProf);
+    }
+
+    public getAluno(nomeAlu: string): Aluno{
+        for(let aluno of this.usuarios.values()){
+            if(aluno.nivel_de_acesso == 1 && aluno.nome == nomeAlu)
+            return aluno
+        }
+    }
+
+    public matricular(aluno: Aluno, disciplina: Disciplina_Matriculavel){
+        for(let semestre of aluno.semestre.values()){
+            if(semestre.ativo == true){
+                semestre.disciplinas.set(disciplina.nome, disciplina);
+            }
+        }
+    }
+
+    public lancarNota(aluno: Aluno, nomeDisc: string, idProva: string, nota: number){
+        for(let semestre of aluno.semestre.values()){
+            if(semestre.ativo == true){
+                semestre.disciplinas.get(nomeDisc).provas.set(idProva, nota);
+            }
+        }
+    }
+
+    public verMedia(aluno: Aluno, nomeDisc: string): number{
+        for(let semestre of aluno.semestre.values()){
+            if(semestre.ativo == true){
+                return semestre.disciplinas.get(nomeDisc).calcularMedia();
+            }
+        }
     }
 }

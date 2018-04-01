@@ -15,10 +15,24 @@ export class Disciplina_Ementa{
 
 export class Disciplina_Matriculavel extends Disciplina_Ementa{
     provas: Map<string, number>;
+    professor: string;
 
-    constructor(nome:string, semestre: number){
+    constructor(nome:string, semestre: number, professor: string = ""){
         super(nome, semestre);
         this.provas = new Map<string, number>();
+        this.professor = professor;
     }
 
+    setProfessor(nomeDoProfessor: string){
+        this.professor = nomeDoProfessor;
+    }
+
+    calcularMedia(): number{
+        let soma_das_notas = 0;
+        for(let nota of this.provas.values()){
+            soma_das_notas += nota;
+        }
+        let media: number = soma_das_notas/(this.provas.size);
+        return media
+    }
 }
